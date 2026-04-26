@@ -428,8 +428,8 @@ This project is open-sourced under the [MIT License](LICENSE).
 ## 👤 Author
 
 **Your Name**
-- GitHub: [@your-username](https://github.com/your-username)
-- Email: your.email@example.com
+- GitHub: [Aryan99664](https://github.com/Aryan99664)
+- Email: qamarrza1@gmail.com
 
 ---
 
