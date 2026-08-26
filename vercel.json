@@ -41,6 +41,7 @@
   "env": {
     "APP_ENV": "production",
     "APP_DEBUG": "true",
+    "APP_STORAGE": "/tmp/storage",
     "APP_CONFIG_CACHE": "/tmp/bootstrap/cache/config.php",
     "APP_EVENTS_CACHE": "/tmp/bootstrap/cache/events.php",
     "APP_PACKAGES_CACHE": "/tmp/bootstrap/cache/packages.php",
@@ -49,6 +50,8 @@
     "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
     "CACHE_STORE": "array",
     "SESSION_DRIVER": "cookie",
-    "LOG_CHANNEL": "stderr"
+    "LOG_CHANNEL": "stderr",
+    "APP_MAINTENANCE_DRIVER": "file",
+    "QUEUE_CONNECTION": "sync"
   }
 }
