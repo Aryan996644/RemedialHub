@@ -21,7 +21,21 @@ foreach ($dirs as $dir) {
     }
 }
 
-// Fallback defaults for empty string environment variables from Vercel UI
+// Clean up any empty-string environment variables from Vercel so Laravel fallback defaults trigger
+foreach ($_ENV as $k => $v) {
+    if (is_string($v) && trim($v) === '') {
+        unset($_ENV[$k]);
+        putenv($k);
+    }
+}
+foreach ($_SERVER as $k => $v) {
+    if (is_string($v) && trim($v) === '') {
+        unset($_SERVER[$k]);
+        putenv($k);
+    }
+}
+
+// Ensure essential serverless configuration
 $defaults = [
     'APP_ENV' => 'production',
     'APP_DEBUG' => 'true',
@@ -37,12 +51,12 @@ $defaults = [
     'CACHE_STORE' => 'array',
     'QUEUE_CONNECTION' => 'sync',
     'DB_CONNECTION' => 'sqlite',
+    'APP_MAINTENANCE_DRIVER' => 'file',
     'MAIL_MAILER' => 'log'
 ];
 
 foreach ($defaults as $key => $val) {
-    $currentVal = getenv($key);
-    if ($currentVal === false || trim((string)$currentVal) === '') {
+    if (empty($_ENV[$key]) || trim((string)$_ENV[$key]) === '') {
         putenv("$key=$val");
         $_ENV[$key] = $val;
         $_SERVER[$key] = $val;
