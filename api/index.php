@@ -21,23 +21,36 @@ foreach ($dirs as $dir) {
     }
 }
 
-// Set environment variables for temporary storage
-putenv('APP_STORAGE=/tmp/storage');
-putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
-putenv('APP_CONFIG_CACHE=/tmp/bootstrap/cache/config.php');
-putenv('APP_EVENTS_CACHE=/tmp/bootstrap/cache/events.php');
-putenv('APP_PACKAGES_CACHE=/tmp/bootstrap/cache/packages.php');
-putenv('APP_ROUTES_CACHE=/tmp/bootstrap/cache/routes.php');
-putenv('APP_SERVICES_CACHE=/tmp/bootstrap/cache/services.php');
-putenv('LOG_CHANNEL=stderr');
+// Fallback defaults for empty string environment variables from Vercel UI
+$defaults = [
+    'APP_ENV' => 'production',
+    'APP_DEBUG' => 'true',
+    'APP_STORAGE' => '/tmp/storage',
+    'VIEW_COMPILED_PATH' => '/tmp/storage/framework/views',
+    'APP_CONFIG_CACHE' => '/tmp/bootstrap/cache/config.php',
+    'APP_EVENTS_CACHE' => '/tmp/bootstrap/cache/events.php',
+    'APP_PACKAGES_CACHE' => '/tmp/bootstrap/cache/packages.php',
+    'APP_ROUTES_CACHE' => '/tmp/bootstrap/cache/routes.php',
+    'APP_SERVICES_CACHE' => '/tmp/bootstrap/cache/services.php',
+    'LOG_CHANNEL' => 'stderr',
+    'SESSION_DRIVER' => 'cookie',
+    'CACHE_STORE' => 'array',
+    'QUEUE_CONNECTION' => 'sync',
+    'DB_CONNECTION' => 'sqlite',
+    'MAIL_MAILER' => 'log'
+];
+
+foreach ($defaults as $key => $val) {
+    $currentVal = getenv($key);
+    if ($currentVal === false || trim((string)$currentVal) === '') {
+        putenv("$key=$val");
+        $_ENV[$key] = $val;
+        $_SERVER[$key] = $val;
+    }
+}
 
 $_ENV['VERCEL'] = '1';
-$_ENV['APP_STORAGE'] = '/tmp/storage';
-$_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
-$_ENV['LOG_CHANNEL'] = 'stderr';
 $_SERVER['VERCEL'] = '1';
-$_SERVER['APP_STORAGE'] = '/tmp/storage';
-$_SERVER['LOG_CHANNEL'] = 'stderr';
 
 // Forward to public/index.php
 require __DIR__ . '/../public/index.php';
