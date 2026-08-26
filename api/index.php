@@ -1,6 +1,6 @@
 <?php
 
-// Ensure /tmp directory structure exists for serverless runtime
+// Ensure all temporary directories exist in /tmp
 $dirs = [
     '/tmp/storage',
     '/tmp/storage/app',
@@ -21,7 +21,7 @@ foreach ($dirs as $dir) {
     }
 }
 
-// Clean up any empty-string environment variables from Vercel so Laravel fallback defaults trigger
+// Clean up any empty-string environment variables from Vercel so Laravel defaults work
 foreach ($_ENV as $k => $v) {
     if (is_string($v) && trim($v) === '') {
         unset($_ENV[$k]);
@@ -35,7 +35,7 @@ foreach ($_SERVER as $k => $v) {
     }
 }
 
-// Ensure essential serverless configuration
+// Essential Serverless Environment Defaults
 $defaults = [
     'APP_ENV' => 'production',
     'APP_DEBUG' => 'true',
@@ -50,7 +50,6 @@ $defaults = [
     'SESSION_DRIVER' => 'cookie',
     'CACHE_STORE' => 'array',
     'QUEUE_CONNECTION' => 'sync',
-    'DB_CONNECTION' => 'sqlite',
     'APP_MAINTENANCE_DRIVER' => 'file',
     'MAIL_MAILER' => 'log'
 ];
@@ -65,6 +64,21 @@ foreach ($defaults as $key => $val) {
 
 $_ENV['VERCEL'] = '1';
 $_SERVER['VERCEL'] = '1';
+
+// Setup SQLite database in /tmp if sqlite is used
+if (!file_exists('/tmp/database.sqlite')) {
+    if (file_exists(__DIR__ . '/../database/database.sqlite')) {
+        copy(__DIR__ . '/../database/database.sqlite', '/tmp/database.sqlite');
+    } else {
+        touch('/tmp/database.sqlite');
+    }
+}
+
+if (empty($_ENV['DB_CONNECTION']) || $_ENV['DB_CONNECTION'] === 'sqlite') {
+    putenv('DB_DATABASE=/tmp/database.sqlite');
+    $_ENV['DB_DATABASE'] = '/tmp/database.sqlite';
+    $_SERVER['DB_DATABASE'] = '/tmp/database.sqlite';
+}
 
 // Forward to public/index.php
 require __DIR__ . '/../public/index.php';
