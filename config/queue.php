@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'database'),
+    'default' => (env('QUEUE_CONNECTION') && trim((string) env('QUEUE_CONNECTION')) !== '') ? env('QUEUE_CONNECTION') : 'sync',
 
     /*
     |--------------------------------------------------------------------------
